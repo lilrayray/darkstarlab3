@@ -221,8 +221,35 @@ We then plot the values of the sum-of-squares versus the value of $C$ in \autore
     
 \section{The Moon}
 
+The same process was repeated for the Moon. Unfortunately, our group did not collect any good Moon data, so Team BADWOLF was kind enough to let us use their raw Moon data. \autoref{fig:moon} is a plot of raw Moon data versus hour angle (calculated by LST-RA).
 
+\begin{figure}[h!]
+ \begin{center}
+    \includegraphics[width=6.5in]{moon_data.ps}
+    \caption{\bf{Moon Data}}
+    \label{fig:moon}
+     \end{center}
+    \end{figure}
 
+\autoref{fig:moon_dft} shows the Fourier transform of the Moon Data. Using \autoref{eq:ff} again and given $\lambda=3 cm$ and $\delta \approx 17^\circ$, we can calculate that the expected values of $f_f$ for hour angles of -4 to 0 is .0177 Hz to .0353 Hz. There is a significant bump within that range, again with more power at the upper frequency value, since that corresponds to the transit frequency. It is not quite as well-defined as the Sun data, but very close.
+
+\begin{figure}[h!]
+ \begin{center}
+    \includegraphics[width=6.5in]{moon_dft.ps}
+    \caption{\bf{Moon DFT}}
+    \label{fig:moon_dft}
+     \end{center}
+    \end{figure}
+    
+\begin{figure}[h!]
+ \begin{center}
+    \includegraphics[width=6.5in]{moon_fit.ps}
+    \caption{\bf{Least Squares Fitting of Moon Data}}
+    \label{fig:ls_moon}
+     \end{center}
+    \end{figure}
+      
+\section{Point Source Data}    
 %%fig here of system
 %
 %%histogram plots here
