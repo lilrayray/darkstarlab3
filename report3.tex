@@ -17,6 +17,7 @@
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage{hyperref}
+\usepackage{listings}
 
 % Automatix LaTeX build system modules
 
@@ -24,6 +25,9 @@
 %\usepackage{mat}
 \usepackage[dvipdfm]{graphicx} 
 \usepackage{bmpsize}
+
+\usepackage{subfig}
+\usepackage{tabularx}
 
 %[stevo]: specify location of images here
 %\usepackage{graphicx}
@@ -78,12 +82,20 @@ An interferometer is desired over a single radio antenna because of increased an
 
 The output of the interferometer is a sinusoidal-like signal called the "fringe."  Given a known baseline \textit{$B_y$} and the frequency, phase, and amplitude properties of the fringe, we can measure the declination of a point source as well as the diameters of the Sun and Moon. Exactly how will be discussed in later sections.
 
-\subsection{Choosing an Observing Frequency}
+\subsection{Data Collection}
+I wrote a script to take interferometry data, which uses the IDL procedures \texttt{isun} or \texttt{imoon} to calculate an altitude and azimuth for the object of interest. Additionally, I wrote a separate script which calculates these values using rotation matrices and double checked that each script gave the same outputs. Right ascension and declination values for the point sources came from the J2000 equinox, and therefore needed to be precessed to the current equinox. These values were then converted to local altitude and azimuth values using the local sidereal time (LST) and Campbell Hall's latitude and longitude. 
+The tracking script updates the values every 10 seconds, using the \texttt{point2} command to set the orientation of the dishes. It also re-calibrates the dishes about every hour using the \texttt{homer} command, in case the dishes lose alignment.
 
-There were some issues figuring this out...***TODO
+\subsection{Choice of Mixing Frequency}
+
+Initially, each lab group was to chose an L.O. frequency of 11.3,11.5,11.7,11.9,12.1, and 12.3 GHz. My group's initial Sun data was taken with the first L.O. frequency set to 12.3GHz. However, we later realized when looking at the initial filter with a passband of 10-18 GHz, that the maximum frequency we should have been using was 11.7GHz. This is because the later bandpass filter narrowly selects for 1.7 GHz, meaning that the frequencies we are actually recording from the sky are L.O.1 $\pm$ 1.7 GHz. Therefore, for any L.O. frequency above 11.7 GHz, such as 12.3 GHz, both frequencies are within the passband (in this case 10.6 GHz and 14 GHz). Choosing an L.O.1 of 11.3 GHz however, would mean that we would see 9.6 GHz and 13 GHz. However, the 9.6 GHz component would have been filtered out by the first bandpass filter, leaving only the 13 GHz component.
+
+\subsection{Dish Accuracy}
+
+When tracking the Sun, we attempted to visually confirm that the dishes were pointing directly at the Sun by checking that the feed shadow lined up directly with the center of the dish. In reality, the shadows did not line up perfectly, but were generally 1-3cm way from the center. Given a 1 meter distance from the feed to the dish, this means that the the dishes were up to 1.7\degree off from the desired position. For extended sources such as the sun, this offset can reduce the fringe amplitude but otherwise has no huge effects. For point sources, however, this offset reduces the chances of pointing directly at the object, and possibly prevents the dishes from pointing at the object at all. Additionally, we noticed that sometimes the wind atop Campbell Hall was strong enough to shake the dishes by several degrees, reducing the accuracy even further.
 
 \section{The Fringe}
-Because we use two different dishes separated by baseline \textit{$B_y$}, there is a difference in their distances from the source. This difference is distance is made up of the geometrical path delay $\tau_{g}$ as well as any difference in cable length $\tau_{c}$. We know $\tau_{g}$, which is a function of the hour angle of the source ($h_s$), from the geometry of the interferometer. For the east-west baseline we have
+Because we use two different dishes separated by baseline \textit{$B_y$}, there is a difference in their distances from the source. This difference is distance is made up of the geometrical path delay $\tau_{g}$ as well as any difference in cable length $\tau_{c}$. We know $\tau_{g}$, which is a function of the hour angle of the source ($h_s$), from the geometry of the interferometer. For the east-west baseline we have:
 
 \singlespacing
 \begin{eqnarray}
@@ -110,6 +122,7 @@ Using various trig identities and the fact that $\frac{\nu}{c} = \lambda$ (see h
 
 \begin{eqnarray}
  F(h_s) =Acos\bigg[ 2\pi(\frac{B_y}{c}cos\;\delta)sin\;h_s \bigg] -Bsin\bigg[ 2\pi(\frac{B_y}{c}cos\;\delta)sin\;h_s \bigg]
+\label{eq:lss}
 \end{eqnarray}
 
 where  $A = cos(2\pi\nu\tau_c)$ and $B = sin(2\pi\nu\tau_c)$. Looking at the argument inside the cosine and sine in each term, we see a constant $C = \bigg[2\pi( \frac{B_y}{c}cos\;\delta )\bigg]$ multiplied by $sin(h_s)$. Because $h_s$ is the hour angle and increases monotonically with time, we can regard it as time. Therefore, the product $C sin(h_s)$ is the argument of the cosine terms and makes it oscillate with a with a frequency that depends on time. 
@@ -124,7 +137,33 @@ This value is in cycles per radian on the sky. To convert into cycles per minute
 
 \section{The Sun}
  
-We began by taking fringe data of the Sun. A valuable exercise was to use the above 'local fringe frequency' equation to predict what frequencies we would see in the sun data, and then to confirm this by taking a Fourier transform of the Sun data. Our first set of Sun data was taken between the hour angles of -3 and 0. Therefore the values of $cos(h_s)$ should range from .707-1. Therefore, given a $B_y$ of 50ft and a $\lambda$ of 2.44 cm and substituting into \autoref{eq:ff} we expect to see a range of frequencies
+We began by taking fringe data of the Sun. \autoref{fig:fringe} shows the Sun fringe data with all 9 hours of data gathered as well as a zoomed in version.
+
+
+\begin{figure}
+        \centering
+        \begin{subfigure}[b]{\textwidth}
+                \centering
+                \includegraphics[width=6in]{sun_fringe.ps}
+                \caption{}
+                \label{fig:fringeout}
+        \end{subfigure}%
+        \newline
+        \begin{subfigure}[b]{\textwidth}
+        	       \centering
+                \includegraphics[width=6in]{sun_fringe_zoom.ps}
+                \caption{}
+                \label{fig:fringezoom}
+        \end{subfigure}
+
+
+        \caption{Sun Fringe Data. Subfigure (a) contains the entire 9 hours of data taken, and subfigure (b) shows a zoomed in version to highlight the sinusoidal nature of the fringe pattern.}\label{fig:fringe}
+\end{figure}
+
+
+A valuable exercise was to use the above 'local fringe frequency' equation to predict what frequencies we would see in the sun data, and then to confirm this by taking a Fourier transform of the Sun data. I performed the following calculations only on the first three hour chunk of sun data for simplicity (and because while we were observing the sun later, there was an attempt by another group to control the dishes and this might have corrupted the data). Our first set of Sun data was taken between the hour angles of -3 and 0. Therefore, the values of $cos(h_s)$ should range from $cos(-3\times 15)$ to $cos(0)$, or .707-1. Therefore, given a $B_y$ of 1524 cm and a $\lambda$ of 2.83 cm, a declination of $\lambda\approx0$ since this data was taken almost at the equinox, and substituting into \autoref{eq:ff} we expect to see a range of frequencies from .0277Hz to .0392Hz.
+
+Indeed, taking the Fourier transform of the Sun fringe data results in \autoref{fig:sun_dft}, which shows that there are frequency components roughly between .027 and .039Hz. The reason there is more power at the higher end (.039Hz) is because this is the so-called 'transit' frequency, when the Sun is directly overhead, and spends a longer time at this frequency.
 
 
 \begin{figure}[h!]
@@ -134,6 +173,56 @@ We began by taking fringe data of the Sun. A valuable exercise was to use the ab
     \label{fig:sun_dft}
      \end{center}
     \end{figure}
+    
+    
+\section{Non-Linear Least Squares Fitting}
+
+The least-squares fitting technique was used on \autoref{eq:lss}, and was done as follows. First we treat the entire value of $\bigg[ \frac{B_y}{\lambda}cos\;\delta \bigg]$ as an unknown, \textit{C}, and adopt a value for the right ascension $\alpha$ to compute $h_s$. Given these assumptions, we use the standard least-squares process to solve for the values of \textit{A} and \textit{B}. The least-squares process we used was the \texttt{CURVEFIT} function in IDL. We then sweep through different values of C and save the value of the sum of the residuals squared for each value. The value of C that gives the minimum sum-of-squares is the best value of C. The code that performed this is given below. 
+
+\lstset{basicstyle=\footnotesize}
+
+
+\begin{lstlisting}[frame=single]
+;the function called 'fringe' is F = A[0]*cos(C*sin(x)) - A[1]*sin(C*sin(x))
+;the 'answer' F is the array of voltage values gathered
+F = volts
+;here we calculate the hour angle
+X = lst - ra ; hour angle is lst-ra
+X = X*15*(!dpi/180.0) ; make it into radians
+;make a blank array that has two values (A and B in our case)
+pointz = make_array(2, stopval-startval, /double)
+startval = 3000l
+stopval = 5000l
+A = [0.5, 0.5] ;initial guess for A
+for jj=startval, stopval-1 do begin ; sweep through different values of C
+      common share, c
+      c = jj
+      fit = CURVEFIT(X, F, weights, A, function_name = 'fringe', /noderivative, CHISQ=ressq)
+      print,jj
+      pointz[0,jj-startval] = jj ;assign value of C to the 1st elem in the array
+      pointz[1,jj-startval] = ressq ; assign the sum of the squares of residuals to 2nd elem
+
+\end{lstlisting}
+
+This is the so-called 'brute-force' technique using least-sqaures. There is a more elegant way of computing the ****TODO*** but only gives local minima, have to put the initial guess so close to the real answer.
+
+In addition we solve for $C = \bigg[2\pi( \frac{B_y}{c}cos\;\delta )\bigg]$ rather than simply $cos\;\delta$ because if we use a baseline that is too small in the solution, the best value for $cos\;\delta$ maybe larger than unity- meaning that no declination will give a satisfactory solution! INstead we solve for C and derive the declination from that value.
+
+We then plot the values of the sum-of-squares versus the value of $C$ in \autoref{fig:ls_sun}. The lowest minimum in the resulting plot is at $C=3354$. Since $C = \bigg[2\pi( \frac{B_y}{c}cos\;\delta )\bigg]$, we can calculate backwards and find that $cos\; \delta = .9915$, which is extremely close to our expected value of $cos\;\delta=.9983$. This expected value comes from looking up the declination of the sun on March 12 here: http://www.wsanford.com/\~{}wsanford/exo/sundials/DEC\_Sun.html.
+
+\begin{figure}[h!]
+ \begin{center}
+    \includegraphics[width=6.5in]{LS.ps}
+    \caption{\bf{Least Squares Fitting of Sun Data}}
+    \label{fig:ls_sun}
+     \end{center}
+    \end{figure}
+    
+    
+\section{The Moon}
+
+
+
 %%fig here of system
 %
 %%histogram plots here
