@@ -63,7 +63,7 @@
 
 \section{Introduction}
 
-The first goal of this lab was to learn about 'fringes.' We first explored how diffraction theory applies to an actual radio interferometer, and what the resulting fringe looks like in terms of its amplitude and phase. Once we obtained the fringe, we explored its properties further by taking a Fourier transform and Fourier filtering the fringe. We practiced these techniques on data taken of the Sun, and then we also obtained data of the Moon and a point source- W43 in our case. The other main goal of this lab was to expand on our knowledge of least-squares fitting techniques, specifically learning how to do \textit{nonlinear} least-squares fitting. Finally, we explored the Fourier transform relationship between interferometer response and sky brightness by using nonlinear least-squares fitting to obtain accurate diameters for the Sun and Moon.
+The first goal of this lab was to learn about 'fringes.' We first explored how diffraction theory applies to an actual radio interferometer, and what the resulting fringe looks like in terms of its amplitude and phase. Once we obtained the fringe, we explored its properties further by taking a Fourier transform and Fourier filtering the fringe. We practiced these techniques on data taken of the Sun, and then we also obtained data of the Moon and a point source- M17 in our case. The other main goal of this lab was to expand on our knowledge of least-squares fitting techniques, specifically learning how to do \textit{nonlinear} least-squares fitting. Finally, we explored the Fourier transform relationship between interferometer response and sky brightness by using nonlinear least-squares fitting to obtain accurate diameters for the Sun and Moon.
 
 \section{Experimental Setup}
 
@@ -89,6 +89,8 @@ The tracking script updates the values every 10 seconds, using the \texttt{point
 \subsection{Choice of Mixing Frequency}
 
 Initially, each lab group was to chose an L.O. frequency of 11.3,11.5,11.7,11.9,12.1, and 12.3 GHz. My group's initial Sun data was taken with the first L.O. frequency set to 12.3GHz. However, we later realized when looking at the initial filter with a passband of 10-18 GHz, that the maximum frequency we should have been using was 11.7GHz. This is because the later bandpass filter narrowly selects for 1.7 GHz, meaning that the frequencies we are actually recording from the sky are L.O.1 $\pm$ 1.7 GHz. Therefore, for any L.O. frequency above 11.7 GHz, such as 12.3 GHz, both frequencies are within the passband (in this case 10.6 GHz and 14 GHz). Choosing an L.O.1 of 11.3 GHz however, would mean that we would see 9.6 GHz and 13 GHz. However, the 9.6 GHz component would have been filtered out by the first bandpass filter, leaving only the 13 GHz component.
+
+Since we used 12.3 GHz for our sun data, we use the $\lambda$ which corresponds to 10.6 GHz, and for the data taken with 11.7 GHZ as the L.O.1 frequency we use the $\lambda$ corresponding to 10 GHz.
 
 \subsection{Dish Accuracy}
 
@@ -137,7 +139,7 @@ This value is in cycles per radian on the sky. To convert into cycles per minute
 
 \section{The Sun}
  
-We began by taking fringe data of the Sun. \autoref{fig:fringe} shows the Sun fringe data with all 9 hours of data gathered as well as a zoomed in version.
+We began by taking fringe data of the Sun on March 12th using an L.O.1 of 12.3 GHz. \autoref{fig:fringe} shows the Sun fringe data with all 9 hours of data gathered as well as a zoomed in version.
 
 
 \begin{figure}
@@ -204,15 +206,15 @@ for jj=startval, stopval-1 do begin ; sweep through different values of C
 
 \end{lstlisting}
 
-This is the so-called 'brute-force' technique using least-sqaures. There is a more elegant way of computing the ****TODO*** but only gives local minima, have to put the initial guess so close to the real answer.
+This is the so-called 'brute-force' technique using least-squares. There is a more elegant way of computing the least squares but it only gives local minima, meaning you have to put the initial guess extremely close to the real answer or you could end up with the wrong minimum. Therefore we stuck to using this brute-force method.
 
 In addition we solve for $C = \bigg[2\pi( \frac{B_y}{c}cos\;\delta )\bigg]$ rather than simply $cos\;\delta$ because if we use a baseline that is too small in the solution, the best value for $cos\;\delta$ maybe larger than unity- meaning that no declination will give a satisfactory solution! INstead we solve for C and derive the declination from that value.
 
-We then plot the values of the sum-of-squares versus the value of $C$ in \autoref{fig:ls_sun}. The lowest minimum in the resulting plot is at $C=3354$. Since $C = \bigg[2\pi( \frac{B_y}{c}cos\;\delta )\bigg]$, we can calculate backwards and find that $cos\; \delta = .9915$, which is extremely close to our expected value of $cos\;\delta=.9983$. This expected value comes from looking up the declination of the sun on March 12 here: http://www.wsanford.com/\~{}wsanford/exo/sundials/DEC\_Sun.html.
+We then plot the values of the sum-of-squares versus the value of $C$ in \autoref{fig:ls_sun}. The lowest minimum in the resulting plot is at $C=3354$. Since $C = \bigg[2\pi( \frac{B_y}{c}cos\;\delta )\bigg]$, we can calculate backwards and find that $cos\; \delta = .9915$, or $\delta\approx7^\circ$which is extremely close to our expected value of $cos\;\delta=.9983$, or $\delta\approx3^\circ$. This expected value comes from looking up the declination of the sun on March 12 here: http://www.wsanford.com/\~{}wsanford/exo/sundials/DEC\_Sun.html.
 
 \begin{figure}[h!]
  \begin{center}
-    \includegraphics[width=6.5in]{LS.ps}
+    \includegraphics[width=6in]{LS.ps}
     \caption{\bf{Least Squares Fitting of Sun Data}}
     \label{fig:ls_sun}
      \end{center}
@@ -221,250 +223,98 @@ We then plot the values of the sum-of-squares versus the value of $C$ in \autore
     
 \section{The Moon}
 
-The same process was repeated for the Moon. Unfortunately, our group did not collect any good Moon data, so Team BADWOLF was kind enough to let us use their raw Moon data. \autoref{fig:moon} is a plot of raw Moon data versus hour angle (calculated by LST-RA).
+The same process was repeated for the Moon. Unfortunately, our group did not collect any good Moon data, so Team BADWOLF was kind enough to let us use their raw Moon data collected on March 17th with and L.O.1 of 11.7 GHz.  \autoref{fig:moon} is a plot of raw Moon data versus hour angle (calculated by LST-RA).
 
 \begin{figure}[h!]
  \begin{center}
-    \includegraphics[width=6.5in]{moon_data.ps}
+    \includegraphics[width=5.5in]{moon_data.ps}
     \caption{\bf{Moon Data}}
     \label{fig:moon}
      \end{center}
     \end{figure}
 
-\autoref{fig:moon_dft} shows the Fourier transform of the Moon Data. Using \autoref{eq:ff} again and given $\lambda=3 cm$ and $\delta \approx 17^\circ$, we can calculate that the expected values of $f_f$ for hour angles of -4 to 0 is .0177 Hz to .0353 Hz. There is a significant bump within that range, again with more power at the upper frequency value, since that corresponds to the transit frequency. It is not quite as well-defined as the Sun data, but very close.
+\autoref{fig:moon_dft} shows the Fourier transform of the Moon Data. Using \autoref{eq:ff} again and given $\lambda=3 cm$ and $\delta \approx -12^\circ$, we can calculate that the expected values of $f_f$ for hour angles of -4 to 0 is .0181 Hz to .0361 Hz. There is a significant bump within that range, again with more power at the upper frequency value, since that corresponds to the transit frequency. It is not quite as well-defined as the Sun data, but very close.
 
 \begin{figure}[h!]
  \begin{center}
-    \includegraphics[width=6.5in]{moon_dft.ps}
+    \includegraphics[width=5.5in]{moon_dft.ps}
     \caption{\bf{Moon DFT}}
     \label{fig:moon_dft}
      \end{center}
     \end{figure}
+  
+\autoref{fig:ls_moon} is the Least Squares Fitting results for the Moon Data.  Again I plotted the values of the sum-of-squares versus the value of $C$ and found that the lowest minimum in the resulting plot is at $C=3156$. Calculating backwards we get that $cos\; \delta = .9888$ or $\delta\approx9^\circ$, which is somewhat close to our expected value of $cos\;\delta=.9781$ or $\delta\approx12^\circ$
     
 \begin{figure}[h!]
  \begin{center}
-    \includegraphics[width=6.5in]{moon_fit.ps}
+    \includegraphics[width=5.5in]{moon_fit.ps}
     \caption{\bf{Least Squares Fitting of Moon Data}}
     \label{fig:ls_moon}
      \end{center}
     \end{figure}
-      
-\section{Point Source Data}    
-%%fig here of system
-%
-%%histogram plots here
-%
-%In order to check that our picosampler is set to the correct voltage threshold, we plotted a histogram of the data using the built in IDL function \texttt{histogram}. In \autoref{fig:histplots}, the histograms of the data gathered with the picosampler threshold set to 1V and 100mV are compared. 100mV is clearly the better choice since the data is not too quantized (as in the first plot) and looks like the well known Gaussian function.
-%
-%
-%\begin{figure}[h!]
-% \begin{center}
-%    \includegraphics[width=4.5in]{histograms.ps}
-%    \caption{\bf{Data Histogram Plots}}
-%    \label{fig:histplots}
-%     \end{center}
-%    \end{figure}
-%
-%\subsection{Finding the Shape of the HI Line}
-%
-%We took data with two different mixing frequencies to obtain our 'online' and 'offline' spectra. We chose 1229.4 and 1231.4 as the two different initial LO frequencies in order to place the line in the middle of the upper sideband and the middle of the lower sideband, respectively. In \autoref{fig:avgplots} the effects of averaging the 'online' spectra and taking the median of the 'online' spectra are compared, along with the effects of smoothing the spectrum in the third plot.
-%
-%\begin{figure}[h!]
-% \begin{center}
-%    \includegraphics[width=5in]{avgvmedian.ps}
-%    \caption{\bf{Averaging, Median, and Smoothing Effects}}
-%    \label{fig:avgplots}
-%     \end{center}
-%    \end{figure}
-%    
-%    
-%\newpage    
-%    
-%For comparison, the 'offline' spectrum is shown in \autoref{fig:offline}.
-%
-%\begin{figure}[h!]
-% \begin{center}
-%    \includegraphics[width=7in]{offline.ps}
-%    \caption{\bf{Offline Spectrum}}
-%    \label{fig:offline}
-%     \end{center}
-%    \end{figure}
-%    
-%    
-%Once we have both the online and offline spectra, we can remove the instrumental bandpass to get the shape of the line by taking the ratio of the two. The ratios of $s_{online}/s_{offline}$ and  $s_{offline}/s_{online}$ are seen in \autoref{fig:ratio}.
-%
-%\begin{figure}[h!]
-% \begin{center}
-%    \includegraphics[width=6in]{ratio.ps}
-%    \caption{\bf{Ratio of Spectra Giving the Shape of the Line}}
-%    \label{fig:ratio}
-%     \end{center}
-%    \end{figure}
-%    
-% \subsection{Calibrating for Intensity}
-% 
-% In order to get the line intensity in terms of the calibration noise source, we took data with the horn looking at a cold sky, giving us $s_{coldsky}$ and with a human (Mahrud) acting as a blackbody to give us a spectrum, $s_{300K}$. We can obtain the scaling factor $T_{sys}$ by the following equation:
-% 
-%\begin{eqnarray}
-%T_{sys} = \frac{\sum s_{coldsky}}{\sum (s_{300K}-s_{coldsky})}*T_{cal}
-%\end{eqnarray}
-%   
-%Where $T_{cal}$ = 300K because that is the thermal power we injected by having Mahrud stand in front of the horn. Our calculated value for $T_{sys}$ is 266.4K.
-%
-%The final calibrated spectrum is given by $ratio \times T_{sys}$. The plot in \autoref{fig:finalcal} was obtained by taking the spectra of each ratio and averaging them, then plotting vs RF frequency.
-%
-% \begin{figure}[h!]
-% \begin{center}
-%    \includegraphics[width=6in]{finalcalspec.ps}
-%    \caption{\bf{Final Calibrated Spectrum vs RF Frequency}}
-%    \label{fig:finalcal}
-%     \end{center}
-%    \end{figure}
-%\newpage
-%   
-%\subsection{Corrections for Doppler Velocity}    
-%    
-%In addition, I have plotted the final calibrated spectrum vs Doppler Velocity. The velocity values were calculated based on the Doppler formula:
-%    
-% \begin{eqnarray}
-% \frac{v}{c} =- \frac{\Delta f}{f_{0}}
-%\end{eqnarray}   
-%    
-% \begin{figure}[h!]
-% \begin{center}
-%    \includegraphics[width=6in]{finalcalVEL.ps}
-%    \caption{\bf{Final Calibrated Spectrum vs Doppler Velocity}}
-%    \label{fig:finalcalvel}
-%     \end{center}
-%    \end{figure}
-%   
-% Finally, we need to correct the observed velocity for the orbital velocity and spin of the Earth. Here we have used the \texttt{ugdoppler.pro} procedure to correct the velocities and express them with respect to the Local Standard of Rest (LSR) and the Barycentric (Sun) reference frames. In \autoref{fig:corrvel}, the velocity with respect to the Barycentric frame is above and the LSR frame is below. Note, they only differ by a few km/s. The values have been calculated using the following values.
-% 
-%\texttt{ \\
-%lat = 37.873 \\
-%lng = -122.257 \\
-%tzone = 8 \\
-%juliandate = 2457071.50603\\
-%\\
-%\\
-%\\} 
-%    
-%     \begin{figure}[h!]
-% \begin{center}
-%    \includegraphics[width=6in]{corr_vel.ps}
-%    \caption{\bf{Final Calibrated Spectrum vs Corrected Doppler Velocity}}
-%    \label{fig:corrvel}
-%     \end{center}
-%    \end{figure}
-%
-%\newpage
-%
-%\section{VSWR Measurement}
-%When transferring power using electromagnetic waves moving through a medium such as cables or waveguides, it is not necessarily the case that all of the input power is transmitted when there is a change in medium. In real systems, if the impedance is different on either side, part of the power is reflected back towards the source. This condition is known as impedance mismatch. 
-%The voltage reflection coefficient for a load with resistance $R_L$ that terminates a line with impedance $Z_0$ is 
-%
-%\begin{eqnarray}
-%\rho = \frac{V_R}{V_F}=\frac{R_L - Z_0}{R_L+Z_0}
-%\end{eqnarray}
-%
-%Where $V_R$ is the reflected voltage amplitude and $V_F$ the forward one. The reflected voltage will interfere with the forward wave constructively and destructively, creating peaks and valleys in the voltage at different distances on the first medium.  The Voltage Standing Wave Ratio, or VSWR, is the ratio of $V_{max}$, the maximum voltage created by constructive interference, over $V_{min}$, the minimum voltage created by destructive interference throughout the medium:
-%
-%\begin{eqnarray}
-%VSWR = \frac{|V_{max}|}{|V_{min}|}=\frac{1+\rho}{1-\rho}
-%\end{eqnarray}
-%
-%
-%\subsection{Standing Waves in Coax Cable}
-%
-%One of the most effective methods of transmitting radio frequency signals is via coaxial cables. In a coax cable a conductive outer layer is grounded and wrapped around the signal carrying core with a dielectric insulator between the core and the shield. The advantage of this design is that electric and magnetic fields are confined to the dielectric with little leakage. In addition, electric and magnetic fields outside the cable are kept from causing interference with the signal on the core.
-%
-%In order to measure VSWR in coax cables we use a slotted coax cable with a probe that can measure the electric field inside the dielectric. The probe is connected to a radio detector which converts electromagnetic waves to a voltage that we can read on a voltmeter. We connect one end of the cable to a signal generator set at 3GHz and leave the other end open. Since the impedance inside the cable (50½) does not match the impedance of free space (infinite), the power will be reflected and we should expect to see standing waves. %\autoref{fig:cabledata} shows the measurements of the nulls and zeros.
-%
-%
-%Taking a simple average of the values between zeros gives us a $\lambda /2$ of 50.1mm. However, using a least squares method (as described below), I find that the wave has a $\lambda /2$ of 49.8515mm. Therefore the wavelength is .0997 m. Using the formula $\lambda\upsilon = c$, that gives a velocity of $.0997  \times 3e9 =  2.991e8\: m/s$ through the coaxial cable, which is roughly the speed of light as we would expect. Note that using the simple averaging method would have given a velocity just greater that the speed of light!
-%
-%The least squares matrix method was done in Matlab as follows:
-%
-% \texttt{\\
-% \%input in the form of a matrix, rows contain points \\
-% x=[1,520;2,1020;3,1530;4,2035;5,2535;6,3040;7,3510;8,4025;9,4505;10,5015]                    \\
-% \%forming A of Ax=b \\
-% a=[1,x(1,1);1,x(2,1);1,x(3,1);1,x(4,1);1,x(5,1);1,x(6,1);1,x(7,1);1,x(8,1);1,x(9,1);1,x(10,1)]           \\
-% \%forming b of Ax=b \\
-% b=[x(1,2);x(2,2);x(3,2);x(4,2);x(5,2);x(6,2);x(7,2);x(8,2);x(9,2);x(10,2)]                \\
-% \%computing projection of matrix A on b, giving x \\
-% yy=inv(transpose(a)*a)*transpose(a)*b }
-%
-%
-%
-%When the coax cable is terminated with a matched load, the wave is not reflected and therefore there is roughly no standing wave in the cable.
-%
-%
-%
-%\subsection{Standing Waves in X-Band Waveguide}
-%
-%We repeated similar measurements with an X-Band Waveguide, taking standing wave measurements for both the open ended and shorted opening cases. The wavelengths in the table below were calculated using a least squares approach. 
-%
-%
-%\begin{table}[h!]
-%\renewcommand{\arraystretch}{1.1}
-%
-%\label{Wavelengths}
-%\centering
-%\begin{tabular}{|c|c|c|c|c|}
-%
-%\hline
-%\bf{Input Frequency}		&\bf{Open $\lambda$(cm)}	&\bf{Open Velocity (Gm/s)}	&\bf{Closed $\lambda$(cm)} &\bf{Closed Velocity(Gm/s)}\\
-%
-%\hline  
-%
-%
-%7.5GHz	&8.26	&.6195& 7.972&.5979\\
-%\hline
-%
-%
-%
-%7.75GHz	&7.436 &.57629&7.336&.56854\\	
-%\hline
-%
-%
-%8GHz	&6.4756 &.51804&6.5612&.52489\\
-%\hline
-%
-%8.25GHz &6.132 &.50589&6.0412&.49839\\
-%\hline
-%
-%8.5GHz &5.5644&.47297 &5.5756 &.47393\\
-%\hline
-%
-%8.75GHz &5.2016&.45514 &5.11&.44713\\
-%\hline
-%
-%\end{tabular}
-%\caption{\bf{Wavelengths and Velocities in the Waveguide}}
-%\end{table}
-%
-%
-%But wait, one might say- the velocities calculated above are fast than the speed of light! This becomes less puzzling when we realize that what we are actually measuring is the 'phase velocity' given by $\upsilon_{p} = \frac{c}{sin \theta}$. Just like waves in the ocean, because a line of constant phase is perpendicular to the direction in which the wave is traveling, the phase velocity along the 'beach' is faster than 3e8.
-%
-%Finally, we are able to derive the cutoff wavelength of this particular waveguide by extrapolating from the data we measured. We already know that the cutoff frequency s 7GHz, and as seen in \autoref{fig:wv}, the line of best fit extended back to 7GHZ gives us a wavelength of approximately 9cm.
-%
-% \begin{figure}[h!]
-% \begin{center}
-%    \includegraphics[width=5in]{figure_1.ps}
-%    \caption{\bf{Wavelengths with Line of Best Fit (Plot by Stevo)}}
-%    \label{fig:wv}
-%     \end{center}
-%    \end{figure}
-%
-%\section{Conclusion}
-%In this lab we found the shape of the 21-cm line from atomic Hydrogen in our galaxy and calibrated the results to remove the instrumental contribution to the spectrum. In the second part of the lab we learned about reflections and impedance matching, VSWR, and how to derive cable lengths and propagation velocities by measuring reflections and wavelengths in both coax cables and waveguides. Lastly, we used linear least-squares fitting to get the most accurate results from our data. 
-%
+
+
+\section{Point Source Data} 
+As with the Moon data, our team did not collect any reasonable point source data, so we borrowed M17 data from Team BADWOLF, which they collected data on March 8, using an L.O.1 of 11.7 GHz. Since the procedure is the same as that of the Sun and Moon, most steps will be omitted here. NB: All Figures in this section were made by Stevo Bailey. 
+
+\autoref{fig:m17_time} shows the time-series fringe data from M17. Since the signal of the point source is very weak and contains noise, the time-series does not look strongly sinusoidal. 
+Next, the Fourier transform was taken to view the fringe spectrum. The expected frequency range was calculated using \autoref{eq:ff} above and found to be .026 Hz to .0475 Hz. However, the spectrum shown in \autoref{fig:m17_dft} shows lots of low-frequency components, but nothing that resembles a fringe, which hints at more problems with the data.
+
+To find the declination, linear least-squares fitting on \autoref{eq:lss} was done, and the results are shown in \autoref{fig:m17_fit}. Note here the minimum is much shallower than before, suggesting the results may be inaccurate or due to noise. The minimum occurs at C = 3377.4, and for this C value, the declination is $37.84^\circ$, which is over $16^\circ$ from the expected value of $16.17^\circ$. Again this suggests problems with the data.
+
+
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=\linewidth]{m17_time.eps}
+\caption{\bf{Time-series fringe data of M17, collected March 8, 2015}}
+\label{fig:m17_time}
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=6in]{m17_dft.eps}
+\caption{\bf{DFT of the M17 fringe data}}
+\label{fig:m17_dft}
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=6in]{m17_fit.ps}
+\caption{\bf{Linear least-squares fitting result on M17 data}}
+\label{fig:m17_fit}
+\end{center}
+\end{figure}
+
+
+
+\section{Diameter of Sun and Moon}   
+
+Interferometer Response for a non-point-source object such as the Sun or Moon is given by:
+
+\begin{eqnarray}
+R(h_s) = F(h_s) \times \int  I(\Delta h) cos(2\pi f_f \Delta h) d\Delta h\
+\label{eq:Rhs}
+\end{eqnarray}
+
+Where the first term is the known as the point-source fringe and the second term is the 'fringe modulator.' Generally, the modulating function is the Fourier transform of the source intensity distribution on the sky. For the flat distribution of the modulating function, the response can and does go through zero, and these zeros occur for $f_f = \frac{n}{2R}$. If we substitute into \autoref{eq:ff}  we have:
+
+\begin{eqnarray}
+ \bigg(\frac{B_y}{\lambda}cos\delta \bigg) cos(h_s) = \frac{n}{2R}
+\label{eq:ff_radius}
+\end{eqnarray}
+
+
+To solve for R, we picked a zero at hour angle = -2.2474. With a $B_y$ of 11.6955 and $\lambda = 2.56 cm$, and sweeping values of $n$ through 4,5, and 6, we get the angular diameter of the moon is 0.008766 radians, which is close to the known value of 0.0088 radians or $\approx$.5 degrees. The Sun has roughly the same angular diameter when viewed from the Earth, and we calculated a value of $\approx$ 0.009 radians for the Sun as well.
+
+\section{Conclusion and Acknowledgments}
+
+In this lab we observed the fringes from the Sun,  the Moon, and M17. From this raw data we were able to take Fourier transforms to gain knowledge of the frequency components present in the fringe, and do a least squares fitting to obtain best values for the declination of each. Finally, using this information we were able to very accurately calculate the diameters of the Sun and Moon. 
+
 %\section{Acknowledgements and Notes}
-%Thanks to Professor Carl Heiles and Katherine DeKleer for their help. Thanks also to the other members of Team Darkstar: Stevo Bailey, Brianna Grado-White, and Mahrud Sayrafi. Thanks this week to team CRAM, for sharing their waveguide raw data with us.
-%
-
-
+Thanks as always to Professor Carl Heiles and Katherine DeKleer for their help. Thanks also to the other members of Team Darkstar: Stevo Bailey, Brianna Grado-White, and Mahrud Sayrafi. Thanks this week to Team BADWOLF, for sharing their raw data with us.
 
 
 
